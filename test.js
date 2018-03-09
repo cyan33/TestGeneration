@@ -1,11 +1,41 @@
-let subject = require('/Users/gameweld/classes/519/workshops/TestGeneration/subject.js')
+let subject = require('/Users/changyan/Documents/repos/TestGeneration/subject.js')
 let mock = require('mock-fs');
-try { subject.inc('', undefined); } catch (e) {} 
-try { subject.inc('', NaN); } catch (e) {} 
-try { subject.weird('', '', '', "strict"); } catch (e) {} 
-try { subject.weird('', '', '', 'NEQ - strict'); } catch (e) {} 
-try { subject.weird('', '', '', "strict"); } catch (e) {} 
-try { subject.weird('', '', '', 'NEQ - strict'); } catch (e) {} 
+try { subject.inc(-1, undefined); } catch (e) {} 
+try { subject.inc(-1, NaN); } catch (e) {} 
+try { subject.inc(1, undefined); } catch (e) {} 
+try { subject.inc(1, NaN); } catch (e) {} 
+try { subject.weird(6, -1, 41, "strict"); } catch (e) {} 
+try { subject.weird(6, -1, 41, 'werw - strict'); } catch (e) {} 
+try { subject.weird(6, -1, 41, "strict"); } catch (e) {} 
+try { subject.weird(6, -1, 41, 'werw - strict'); } catch (e) {} 
+try { subject.weird(6, -1, 43, "strict"); } catch (e) {} 
+try { subject.weird(6, -1, 43, 'werw - strict'); } catch (e) {} 
+try { subject.weird(6, -1, 43, "strict"); } catch (e) {} 
+try { subject.weird(6, -1, 43, 'werw - strict'); } catch (e) {} 
+try { subject.weird(6, 1, 41, "strict"); } catch (e) {} 
+try { subject.weird(6, 1, 41, 'werw - strict'); } catch (e) {} 
+try { subject.weird(6, 1, 41, "strict"); } catch (e) {} 
+try { subject.weird(6, 1, 41, 'werw - strict'); } catch (e) {} 
+try { subject.weird(6, 1, 43, "strict"); } catch (e) {} 
+try { subject.weird(6, 1, 43, 'werw - strict'); } catch (e) {} 
+try { subject.weird(6, 1, 43, "strict"); } catch (e) {} 
+try { subject.weird(6, 1, 43, 'werw - strict'); } catch (e) {} 
+try { subject.weird(8, -1, 41, "strict"); } catch (e) {} 
+try { subject.weird(8, -1, 41, 'werw - strict'); } catch (e) {} 
+try { subject.weird(8, -1, 41, "strict"); } catch (e) {} 
+try { subject.weird(8, -1, 41, 'werw - strict'); } catch (e) {} 
+try { subject.weird(8, -1, 43, "strict"); } catch (e) {} 
+try { subject.weird(8, -1, 43, 'werw - strict'); } catch (e) {} 
+try { subject.weird(8, -1, 43, "strict"); } catch (e) {} 
+try { subject.weird(8, -1, 43, 'werw - strict'); } catch (e) {} 
+try { subject.weird(8, 1, 41, "strict"); } catch (e) {} 
+try { subject.weird(8, 1, 41, 'werw - strict'); } catch (e) {} 
+try { subject.weird(8, 1, 41, "strict"); } catch (e) {} 
+try { subject.weird(8, 1, 41, 'werw - strict'); } catch (e) {} 
+try { subject.weird(8, 1, 43, "strict"); } catch (e) {} 
+try { subject.weird(8, 1, 43, 'werw - strict'); } catch (e) {} 
+try { subject.weird(8, 1, 43, "strict"); } catch (e) {} 
+try { subject.weird(8, 1, 43, 'werw - strict'); } catch (e) {} 
 try{
 	mock({emptyDir:mock.directory(),nonEmptyDir:mock.directory({ items: { file: mock.file() } }),file:mock.file(),pathContent:{file1:new Buffer('abc'),someDir:mock.directory()}});
 		subject.fileTest('', 'pathContent/file1');

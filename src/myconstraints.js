@@ -67,7 +67,7 @@ function constraints(filePath) {
             // Get function name and arguments
             let funcName = functionName(node);
             let params = node.params.map(function(p) {return p.name});
-
+            
             // Initialize function constraints
             functionConstraints[funcName] = {
                 constraints: _.zipObject(params, _.map(params, () => [])),
@@ -76,9 +76,7 @@ function constraints(filePath) {
 
             // Traverse function node.
             traverse(node, function(child) {
-
-                // Handle equivalence expression
-                if(_.get(child, 'type') === 'BinaryExpression' ) {
+                if(_.get(child, 'type') === 'BinaryExpression') {
                     if(_.get(child, 'left.type') === 'Identifier') {
                         // Get identifier
                         let ident = child.left.name;
@@ -87,57 +85,51 @@ function constraints(filePath) {
                         let expression = buf.substring(child.range[0], child.range[1]);
                         let rightHand = buf.substring(child.right.range[0], child.right.range[1]);
 
-                        // Test to see if right hand is a string
+                        // Test to see if right hand is a string, return the part which matches the regex
                         let match = rightHand.match(/^['"](.*)['"]$/);
 
-                        if (_.includes(['!=', '!==', '==', '==='], _.get(child, 'operator'))) {
-                            if (_.includes(params, _.get(child, 'left.name'))) {
-
-                                // Push a new constraints
-                                let constraints = functionConstraints[funcName].constraints[ident];
-                                constraints.push(new Constraint({
-                                    ident: child.left.name,
-                                    value: rightHand,
-                                    funcName: funcName,
-                                    kind: "integer",
-                                    operator : child.operator,
-                                    expression: expression
-                                }));
-                                constraints.push(new Constraint({
-                                    ident: child.left.name,
-                                    value: match ? `'werw - ${match[1]}'` : NaN,
-                                    funcName: funcName,
-                                    kind: "integer",
-                                    operator : child.operator,
-                                    expression: expression
-                                }));
-                            }
+                        if (_.includes(['!=', '!==', '==', '==='], _.get(child, 'operator')) && _.includes(params, _.get(child, 'left.name'))) {
+                            // Push a new constraints
+                            let constraints = functionConstraints[funcName].constraints[ident];
+                            constraints.push(new Constraint({
+                                ident: child.left.name,
+                                value: rightHand,
+                                funcName: funcName,
+                                kind: "integer",
+                                operator : child.operator,
+                                expression: expression
+                            }));
+                            constraints.push(new Constraint({
+                                ident: child.left.name,
+                                value: match ? `'NEQ - ${match[1]}'` : NaN,
+                                funcName: funcName,
+                                kind: "integer",
+                                operator : child.operator,
+                                expression: expression
+                            }));
                         }
 
                         if (_.includes(['<=', '<', '>=', '>'], _.get(child, 'operator')) && _.includes(params, _.get(child, 'left.name'))) {
-                            if (parseInt(rightHand) !== NaN) {
-                                functionConstraints[funcName].constraints[ident].push(new Constraint({
-                                    ident: child.left.name,
-                                    funcName: funcName,
-                                    value: generateComparisonValue(child.operator, rightHand)[0],
-                                    kind: "integer",
-                                    operator : child.operator,
-                                    expression: expression
-                                }))
-                                functionConstraints[funcName].constraints[ident].push(new Constraint({
-                                    ident: child.left.name,
-                                    funcName: funcName,
-                                    value: generateComparisonValue(child.operator, rightHand)[1],
-                                    kind: "integer",
-                                    operator : child.operator,
-                                    expression: expression
-                                }))
-                            }
+                            functionConstraints[funcName].constraints[ident].push(new Constraint({
+                                ident: child.left.name,
+                                funcName: funcName,
+                                value: generateComparisonValue(child.operator, rightHand),
+                                kind: "integer",
+                                operator : child.operator,
+                                expression: expression
+                            }))
                         }
                     }
                 }
 
-                
+                // Handle less than or greater than
+                if (_.get(child, 'type') === 'BinaryExpression') {
+                    if (_.includes(['>=', '>', '<=', '<'], _.get(child, 'operator'))) {
+                        const operator = _.get(child, 'operator')
+
+                    }
+                }
+
 
                 // Handle fs.readFileSync
                 if( child.type === "CallExpression" && child.callee.property && child.callee.property.name === "readFileSync" ) {
@@ -214,12 +206,15 @@ function functionName(node) {
 }
 
 function generateComparisonValue(operator, value) {
-    value = parseInt(value)
-    if (~operator.indexOf('==')) {
-        return [value, value + 1]
+    if (~operator.indexOf('>')) {
+        return value + 1
+    } else if (~operator.indexOf('<')) {
+        return value - 1
+    } else if (~operator.indexOf('==')) {
+        return value
     }
-    return [value - 1, value + 1]
 }
+
 
 /**
  * Generates an integer value based on some constraint.

@@ -5,7 +5,10 @@
   "main": "main.js",
   "scripts": {
     "test": "mocha;./node_modules/.bin/istanbul cover test.js",
-    "fulltest": "node main.js && istanbul cover _mocha test.js"    
+    "fulltest": "node main.js && istanbul cover _mocha test.js",
+    "debug": "node --inspect-brk main.js",
+    "coverage": "istanbul cover test.js",
+    "coverage:view": "open coverage/lcov-report/TestGeneration/subject.js.html"
   },
   "author": "",
   "license": "ISC",
