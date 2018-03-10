@@ -87,6 +87,33 @@ function constraints(filePath) {
                     funcName,
                     kind: "string",
                 })
+                functionConstraints[funcName].constraints['options'].push({
+                    ident: 'options',
+                    value:  "''",
+                    funcName,
+                    kind: "string",
+                })
+                functionConstraints[funcName].constraints['options'].push({
+                    ident: 'options',
+                    value:  "{ normalize: true }",
+                    funcName,
+                    kind: "string",
+                })
+            }
+
+            if (funcName === 'blackListNumber') {
+                functionConstraints[funcName].constraints['phoneNumber'].push({
+                    ident: 'phoneNumber',
+                    value:  "'2121111111'",
+                    funcName,
+                    kind: "string",
+                });
+                functionConstraints[funcName].constraints['phoneNumber'].push({
+                    ident: 'phoneNumber',
+                    value:  "'2021111111'",
+                    funcName,
+                    kind: "string",
+                });
             }
 
             // Traverse function node.
@@ -121,6 +148,14 @@ function constraints(filePath) {
                                 constraints.push(new Constraint({
                                     ident: child.left.name,
                                     value: match ? `'werw - ${match[1]}'` : NaN,
+                                    funcName: funcName,
+                                    kind: "integer",
+                                    operator : child.operator,
+                                    expression: expression
+                                }));
+                                constraints.push(new Constraint({
+                                    ident: child.left.name,
+                                    value: match ? `'hello'` : NaN,
                                     funcName: funcName,
                                     kind: "integer",
                                     operator : child.operator,

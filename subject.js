@@ -73,6 +73,8 @@ function normalize(phoneNumber) {
 function format(phoneNumber, formatString, options) 
 {
     // Normalize the phone number first unless not asked to do so in the options
+
+    // formatString: NNN-NNN-NNNN
     if (!options || !options.normalize) {
       phoneNumber = normalize(phoneNumber)
     };
