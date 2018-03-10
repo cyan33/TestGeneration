@@ -18,7 +18,8 @@ const mockFileLibrary = {
     fileWithContent: {
         pathContent: {
             file1: "new Buffer('abc')",
-            someDir: 'mock.directory()'
+            someDir: 'mock.directory()',
+            // noContent: '',
         }
     }
 };
@@ -111,6 +112,7 @@ function generateMockFsTestCases (pathExists, fileWithContent, funcName, args) {
         for (let attrname in mockFileLibrary.fileWithContent) {
             mergedFS[attrname] = mockFileLibrary.fileWithContent[attrname];
         }
+        // mergedFS['pathContent'] = mockFileLibrary.fileWithContent[args[1]] || ''
     }
 
     // Generate and return test case string.

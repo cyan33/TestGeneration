@@ -160,6 +160,16 @@ function constraints(filePath) {
                                 operator : child.operator,
                                 expression: expression
                             }));
+
+                            // file that doesn't exist
+                            functionConstraints[funcName].constraints[ident].push(new Constraint({
+                                ident: params[p],
+                                value:  "'pathContent/non'",
+                                funcName: funcName,
+                                kind: "fileWithContent",
+                                operator : child.operator,
+                                expression: expression
+                            }));
                         }
                     }
                 }

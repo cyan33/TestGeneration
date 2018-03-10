@@ -51,8 +51,8 @@ function fileTest(dir, filePath)
     }
 
    if( fs.existsSync(filePath ))
-   {
-		var buf = fs.readFileSync(filePath, "utf8");
+    {
+        var buf = fs.readFileSync(filePath, "utf8");
 		if( buf.length > 0 )
 		{
 			return true;

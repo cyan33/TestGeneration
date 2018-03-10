@@ -74,6 +74,21 @@ function constraints(filePath) {
                 params: params
             };
 
+            if (funcName === 'format') {
+                functionConstraints[funcName].constraints['phoneNumber'].push({
+                    ident: 'phoneNumber',
+                    value:  "'1231231234'",
+                    funcName,
+                    kind: "string",
+                })
+                functionConstraints[funcName].constraints['formatString'].push({
+                    ident: 'formatString',
+                    value:  "'(NNN)-NNN-NNNN'",
+                    funcName,
+                    kind: "string",
+                })
+            }
+
             // Traverse function node.
             traverse(node, function(child) {
 
@@ -137,7 +152,31 @@ function constraints(filePath) {
                     }
                 }
 
-                
+                // Handle fs.existsSync
+                if( child.type === "CallExpression" && child.callee.property && child.callee.property.name === "existsSync" ) {
+                    let expression = buf.substring(child.range[0], child.range[1]);
+                    let ident = child.arguments[0].name
+
+                    functionConstraints[funcName].constraints[ident].push(new Constraint({
+                        ident,
+                        value:  "'doesnt exists'",
+                        funcName: funcName,
+                        kind: "string",
+                        operator : child.operator,
+                        expression: expression
+                    }));
+
+                    functionConstraints[funcName].constraints[ident].push(new Constraint({
+                        ident,
+                        value:  "''",
+                        funcName: funcName,
+                        kind: "string",
+                        operator : child.operator,
+                        expression: expression
+                    }));
+                }
+
+
 
                 // Handle fs.readFileSync
                 if( child.type === "CallExpression" && child.callee.property && child.callee.property.name === "readFileSync" ) {
@@ -168,8 +207,22 @@ function constraints(filePath) {
                                 operator : child.operator,
                                 expression: expression
                             }));
+
+                            // file that exists but doesn't have content
+                            // functionConstraints[funcName].constraints[ident].push(new Constraint({
+                            //     ident: params[p],
+                            //     value:  "'pathContent/noContent'",
+                            //     funcName: funcName,
+                            //     kind: "fileWithContent",
+                            //     operator : child.operator,
+                            //     expression: expression
+                            // }));
                         }
                     }
+                }
+
+                if( child.type === "CallExpression" && child.callee.property && child.callee.property.name === "format" ) {
+                    console.log('hahs')
                 }
 
             });
