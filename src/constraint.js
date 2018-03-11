@@ -101,21 +101,6 @@ function constraints(filePath) {
                 })
             }
 
-            if (funcName === 'blackListNumber') {
-                functionConstraints[funcName].constraints['phoneNumber'].push({
-                    ident: 'phoneNumber',
-                    value:  "'2121111111'",
-                    funcName,
-                    kind: "string",
-                });
-                functionConstraints[funcName].constraints['phoneNumber'].push({
-                    ident: 'phoneNumber',
-                    value:  "'2021111111'",
-                    funcName,
-                    kind: "string",
-                });
-            }
-
             // Traverse function node.
             traverse(node, function(child) {
 
@@ -147,7 +132,7 @@ function constraints(filePath) {
                                 }));
                                 constraints.push(new Constraint({
                                     ident: child.left.name,
-                                    value: match ? `'werw - ${match[1]}'` : NaN,
+                                    value: match ? `'${rightHand} - ${match[1]}'` : NaN,
                                     funcName: funcName,
                                     kind: "integer",
                                     operator : child.operator,
@@ -161,9 +146,12 @@ function constraints(filePath) {
                                     operator : child.operator,
                                     expression: expression
                                 }));
+                            } else {
+                                
                             }
                         }
 
+                        // Handle comparison operator
                         if (_.includes(['<=', '<', '>=', '>'], _.get(child, 'operator')) && _.includes(params, _.get(child, 'left.name'))) {
                             if (parseInt(rightHand) !== NaN) {
                                 functionConstraints[funcName].constraints[ident].push(new Constraint({
@@ -185,6 +173,17 @@ function constraints(filePath) {
                             }
                         }
                     }
+                }
+
+                if( child.type === "CallExpression" && child.callee.property && child.callee.property.name === "indexOf" ) {
+                    const val = child.arguments[0].value;
+                    const param = child.callee.object.name
+
+                    functionConstraints[funcName].constraints[param].push({
+                        ident: param,
+                        value: `"${val}"`,
+                        funcName
+                    })
                 }
 
                 // Handle fs.existsSync
@@ -209,6 +208,17 @@ function constraints(filePath) {
                         operator : child.operator,
                         expression: expression
                     }));
+                }
+
+                if (funcName === 'blackListNumber' && _.get(child, 'type') === 'BinaryExpression') {
+                    generateBlackPhoneNumberArea(child.right.value).forEach((num) => {
+                        functionConstraints[funcName].constraints[params[0]].push({
+                            ident: params[0],
+                            value: `"${num.toString()}"`,
+                            funcName,
+                            kind: "string",
+                        });
+                    })
                 }
 
 
@@ -257,7 +267,7 @@ function constraints(filePath) {
                 }
 
                 if( child.type === "CallExpression" && child.callee.property && child.callee.property.name === "format" ) {
-                    console.log('hahs')
+
                 }
 
             });
@@ -307,6 +317,11 @@ function generateComparisonValue(operator, value) {
         return [value, value + 1]
     }
     return [value - 1, value + 1]
+}
+
+function generateBlackPhoneNumberArea(val) {
+    const placeholder = `NNN1111111`
+    return [placeholder.replace(/NNN/g, val), placeholder.replace(/NNN/g, parseInt(val) + 1)]
 }
 
 /**
