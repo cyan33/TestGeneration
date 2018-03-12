@@ -25,7 +25,7 @@ require('./src/format-polyfill');
     // Parse file input, defaulting to subject.js if not provided
     let args = process.argv.slice(2);
     if( args.length === 0 ) {
-        args = ["mystery.js"];
+        args = ["subject.js"];
     }
     let filePath = path.resolve(args[0]);
 
